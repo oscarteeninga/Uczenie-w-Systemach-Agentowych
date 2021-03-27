@@ -1,0 +1,4 @@
+[debug] not up to date. inChanged = true, force = false
+[debug] Updating ProjectRef(uri("file:/Users/oscarteeninga/Library/Mobile%20Documents/com~apple~CloudDocs/Semestr%208/Uczenie-w-Systemach-Agentowych/"), "uczenie-w-systemach-agentowych")...
+[debug] Done updating ProjectRef(uri("file:/Users/oscarteeninga/Library/Mobile%20Documents/com~apple~CloudDocs/Semestr%208/Uczenie-w-Systemach-Agentowych/"), "uczenie-w-systemach-agentowych")
+[warn] There may be incompatibilities among your library dependencies; run 'evicted' to see detailed eviction warnings.
