@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="uczenie-w-systemach-agentowych" />
-    <profile name="sbt 2" modules="Uczenie-w-Systemach-Agentowych">
-      <plugins>
-        <plugin path="$PROJECT_DIR$/../../../../Caches/Coursier/v1/https/repo1.maven.org/maven2/com/thoughtworks/import/import_2.11/2.0.2/import_2.11-2.0.2.jar" />
-        <plugin path="$PROJECT_DIR$/../../../../Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scalamacros/paradise_2.11.11/2.1.0/paradise_2.11.11-2.1.0.jar" />
-      </plugins>
-    </profile>
+    <profile name="sbt 1" modules="Uczenie-w-Systemach-Agentowych,uczenie-w-systemach-agentowych" />
   </component>
 </project>

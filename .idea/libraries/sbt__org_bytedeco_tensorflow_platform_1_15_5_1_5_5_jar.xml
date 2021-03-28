@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="sbt: org.bytedeco:tensorflow-platform:1.15.5-1.5.5:jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../Caches/Coursier/v1/https/repo1.maven.org/maven2/org/bytedeco/tensorflow-platform/1.15.5-1.5.5/tensorflow-platform-1.15.5-1.5.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../../Caches/Coursier/v1/https/repo1.maven.org/maven2/org/bytedeco/tensorflow-platform/1.15.5-1.5.5/tensorflow-platform-1.15.5-1.5.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../Caches/Coursier/v1/https/repo1.maven.org/maven2/org/bytedeco/tensorflow-platform/1.15.5-1.5.5/tensorflow-platform-1.15.5-1.5.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
