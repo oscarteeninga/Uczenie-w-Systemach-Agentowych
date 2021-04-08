@@ -1,6 +1,6 @@
 package network
 
-import org.deeplearning4j.datasets.iterator.impl.EmnistDataSetIterator
+import org.deeplearning4j.datasets.iterator.impl.{EmnistDataSetIterator, MnistDataSetIterator}
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.layers.{DenseLayer, OutputLayer}
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
@@ -9,17 +9,20 @@ import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
 
+import scala.util.Random
+
 object Book {
-  private val batchSize = 128
-  private val emnistSet = EmnistDataSetIterator.Set.BALANCED
-  val emnistTrain = new EmnistDataSetIterator(emnistSet, batchSize, true)
-  val emnistTest = new EmnistDataSetIterator(emnistSet, batchSize, false)
+  private val trainSize = 5000
+  private val testSize = 10
+  def rngSeed: Int = Random.nextInt()
 
-  private val outputNum = EmnistDataSetIterator.numLabels(emnistSet)
-  private val rngSeed = 123
+  val mnistTrain = new MnistDataSetIterator(trainSize, true, rngSeed)
+  val mnistTest = new MnistDataSetIterator(testSize, false, rngSeed)
+
+  private val outputNum = 10
+
   private val numRows = 28
-  private val numColumns = 2
-
+  private val numColumns = 28
 
   def network: MultiLayerNetwork = {
     val conf = new NeuralNetConfiguration.Builder()
@@ -29,15 +32,16 @@ object Book {
       .list()
       .layer(new DenseLayer.Builder()
         .nIn(numRows * numColumns)
-        .nOut(1000)
+        .nOut(128)
         .activation(Activation.RELU)
-        .weightInit(WeightInit.XAVIER)
         .build())
-      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-        .nIn(1000)
+      .layer(new DenseLayer.Builder()
+        .nOut(64)
+        .activation(Activation.RELU)
+        .build())
+      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
         .nOut(outputNum)
         .activation(Activation.SOFTMAX)
-        .weightInit(WeightInit.XAVIER)
         .build())
       .build()
 

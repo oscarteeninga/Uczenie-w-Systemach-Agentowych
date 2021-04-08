@@ -7,7 +7,7 @@ import command.{BeginExam, Exam, ExamEnded, Examined}
 case class Examiner(students: Students, director: ActorRef) extends Actor {
   private val log = Logging(context.system, this)
 
-  private var predictions = List[Object]()
+  private var predictions: List[List[Int]] = Nil
 
   override def receive: Receive = holidays
 
@@ -25,7 +25,7 @@ case class Examiner(students: Students, director: ActorRef) extends Actor {
       if (predictions.size == students.count) {
         log.debug("[Examination] All student completed exam")
         director ! ExamEnded(predictions)
-        predictions = List[Object]()
+        predictions = Nil
         context become holidays
       } else {
         context become examination

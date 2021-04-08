@@ -1,6 +1,7 @@
 import agents.{Director, Student, Students}
 import akka.actor.{ActorSystem, Props}
 import command.BeginYear
+import network.Book
 
 object School extends App {
   val system = ActorSystem("school")
@@ -10,7 +11,8 @@ object School extends App {
 
   val director = system.actorOf(Props(Director(students)), "Director")
 
-  val (training, test) = ((1 to 10).map(new Integer(_)).toList, (1 to 2).map(new Integer(_)).toList)
+  val training = (1 to 10).toList.map(_ => Book.mnistTrain.next())
+  val test = (1 to 3).toList.map(_ => Book.mnistTest.next())
 
   director ! BeginYear(training, test)
 

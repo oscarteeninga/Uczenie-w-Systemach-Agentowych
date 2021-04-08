@@ -8,7 +8,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 
 case class Student(id: Int) extends Actor {
 
-  private val network: MultiLayerNetwork = Book.network
+  private lazy val network: MultiLayerNetwork = Book.network
 
   private val log = Logging(context.system, this)
 
@@ -16,15 +16,14 @@ case class Student(id: Int) extends Actor {
 
   def studying: Receive = {
     case Learn(sample) =>
-      log.debug("[Studying] Student " + id + " is learning")
-      //TODO: Tutaj trzeba stworzyć obsługę skorzystania z sieci
-      //network.fir(sample)
+      log.debug("[Studying] Student " + id + " is learn")
+      network.fit(sample)
       sender ! Learned
       context become studying
     case Exam(sample) =>
-      log.debug("[Studying] Student " + id + " is predicting")
-      //TODO: Tutaj trzeba stworzyć obsługę skorzystania z sieci
-      sender ! Examined(sample)
+      log.debug("[Studying] Student " + id + " complete exam")
+      val predictions = network.predict(sample.getFeatures)
+      sender ! Examined(predictions.toList)
       context become studying
     case msg: Any => log.warning("[InLearning] Received unknown message: " + msg.toString)
   }
