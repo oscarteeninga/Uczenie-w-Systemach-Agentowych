@@ -1,62 +1,48 @@
 package agents
 
-import akka.actor.{Actor, Props}
+import akka.actor.{Actor, ActorRef}
 import akka.event.Logging
-import command.{BeginExam, BeginYear, ExamEnded, Learn, Teached}
+import command.{BeginExam, BeginYear, ExamEnded, Learn, Teach, Teached}
 import org.nd4j.linalg.dataset.DataSet
 
-case class Director(students: Students) extends Actor {
+case class Director(students: ActorRef) extends Actor {
 
   private val log = Logging(context.system, this)
 
-  private val teacher = context.system.actorOf(Props(Teacher(students, self)), "Teacher")
-  private val examiner = context.system.actorOf(Props(Examiner(students, self)), "Examiner")
-
   override def receive: Receive = manage
 
-  private var lessons: List[DataSet] = Nil
-  private var exams: List[DataSet] = Nil
-
-  private var answers: List[List[List[Int]]] = Nil
-  private var corrects: List[List[Int]] = Nil
-
   def manage: Receive = {
-    case BeginYear(training, test) =>
+    case BeginYear(lessons, exams) =>
       log.debug("[Holidays] Begin learning")
-      exams = test
-      corrects = test.map(getCorrectLabels)
-      lessons = training.tail
-      teacher ! Learn(training.head)
-      context become learning
+      val corrects = exams.map(getCorrectLabels)
+      students ! Teach(lessons.head)
+      context become learning(exams, lessons, corrects)
     case msg: Any => log.warning("[command.Manage] Received unknown message: " + msg.toString)
   }
 
-  def learning: Receive = {
+  def learning(exams: List[DataSet], lessons: List[DataSet], corrects: List[List[Int]]): Receive = {
     case Teached =>
       if (lessons.isEmpty) {
         log.debug("[Learning] Learning complete, begin exam")
-        examiner ! BeginExam(exams.head)
-        exams = exams.tail
-        context become examining
+        students ! BeginExam(exams.head)
+        context become examining(exams.tail, Nil, corrects)
       } else {
-        teacher ! Learn(lessons.head)
-        lessons = lessons.tail
-        context become learning
+        students ! Teach(lessons.head)
+        context become learning(exams, lessons.tail, corrects)
       }
     case msg: Any => log.warning("[Learning] Received unknown message: " + msg.toString)
   }
 
-  def examining: Receive = {
-    case ExamEnded(predictions) if sender.equals(examiner) =>
-      answers = predictions :: answers
+  def examining(exams: List[DataSet], answers: List[List[Int]], corrects: List[List[Int]]): Receive = {
+    case ExamEnded(answer) =>
+      val allAnswers = answers ++ Seq(answer)
       if (exams.isEmpty) {
         log.debug("[Examining] Examining complete, begin holidays")
-        printResults()
+        printResults(allAnswers, corrects)
         context become manage
       } else {
-        examiner ! BeginExam(exams.head)
-        exams = exams.tail
-        context become examining
+        students ! BeginExam(exams.head)
+        context become examining(exams.tail, allAnswers, corrects)
       }
     case msg: Any => log.warning("[Examining] Received unknown message: " + msg.toString)
   }
@@ -66,14 +52,12 @@ case class Director(students: Students) extends Actor {
     labels.map(labelArray => labelArray.toList.indexOf(labelArray.max)).toList
   }
 
-  private def printResults(): Unit = {
+  private def printResults(answers: List[List[Int]], corrects: List[List[Int]]): Unit = {
     for ((correct, answer) <- corrects.zip(answers)) {
       println("Results for " + corrects.indexOf(correct) + " exam")
-      println("Correct:\t\t" + correct.mkString(", "))
-      println("Answers: ")
-      for (answerOne <- answer) {
-        println("\tStudent " + answer.indexOf(answerOne) + ":\t" + answerOne.mkString(", "))
-      }
+      println("Correct:\t" + correct.mkString(", "))
+      println("Answer:\t\t" + answer.mkString(", "))
+      println("Accuracy:\t" + (correct.zip(answer).count{ case (a, b) => a == b }.toDouble / correct.size))
       println()
     }
   }

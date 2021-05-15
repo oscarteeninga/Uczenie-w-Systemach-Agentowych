@@ -1,14 +1,15 @@
-import agents.{Director, Student, Students}
+import agents.student.BinaryStudent
+import agents.Director
+import agents.students.BinaryStudents
 import akka.actor.{ActorSystem, Props}
 import command.BeginYear
 import network.Book
 
-object School extends App {
+object BinarySchool extends App {
   val system = ActorSystem("school")
 
-  val students =
-    Students((1 to 5).toList.map(id => system.actorOf(Props(Student(id)), "Student" + id)))
-
+  val studentList = (1 to 5).toList.map(id => system.actorOf(Props(BinaryStudent(id, id % 10)), "Student" + id))
+  val students = system.actorOf(Props(BinaryStudents(studentList)), "Students")
   val director = system.actorOf(Props(Director(students)), "Director")
 
   val training = (1 to 10).toList.map(_ => Book.mnistTrain.next())
