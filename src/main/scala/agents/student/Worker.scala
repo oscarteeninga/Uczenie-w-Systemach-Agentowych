@@ -6,7 +6,7 @@ import command.{Exam, Examined, Learn, Learned}
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.dataset.DataSet
 
-trait Student extends Actor {
+trait Worker extends Actor {
 
   protected val log = Logging(context.system, this)
 

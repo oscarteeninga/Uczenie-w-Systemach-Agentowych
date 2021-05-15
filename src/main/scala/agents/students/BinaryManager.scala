@@ -5,7 +5,7 @@ import command.{Exam, Learn}
 import org.nd4j.linalg.dataset.DataSet
 import util.DataSetManipulator
 
-case class BinaryStudents(studentRefs: List[ActorRef]) extends Students(studentRefs) {
+case class BinaryManager(studentRefs: List[ActorRef]) extends Manager(studentRefs) {
 
   def studentRefToType: List[(Int, ActorRef)] = studentRefs.map(ref => (studentRefs.indexOf(ref) % studentRefs.size, ref))
 

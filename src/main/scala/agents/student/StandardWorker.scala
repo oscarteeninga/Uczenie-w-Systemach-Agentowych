@@ -1,12 +1,12 @@
 package agents.student
 
-import network.Book
+import network.Data
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.dataset.DataSet
 
-case class StandardStudent(id: Int) extends Student {
+case class StandardWorker(id: Int) extends Worker {
 
-  override val network: MultiLayerNetwork = Book.network
+  override val network: MultiLayerNetwork = Data.network
 
   override def fit(sample: DataSet): Unit = {
     network.fit(sample)

@@ -11,7 +11,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions
 
 import scala.util.Random
 
-object Book {
+object Data {
   private val trainBatchSize = 6000
   private val testBatchSize = 25
   private def rngSeed: Int = Random.nextInt()

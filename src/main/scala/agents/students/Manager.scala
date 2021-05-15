@@ -5,7 +5,7 @@ import akka.event.Logging
 import command.{BeginExam, ExamEnded, Examined, Learned, Teach, Teached}
 import org.nd4j.linalg.dataset.DataSet
 
-abstract class Students(studentRefs: List[ActorRef]) extends Actor {
+abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
 
   def beginLearn(dataSet: DataSet): Unit
 
