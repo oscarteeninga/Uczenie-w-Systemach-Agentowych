@@ -5,7 +5,7 @@ import akka.event.Logging
 import command.{BeginExam, ExamEnded, Examined, Learned, Teach, Teached}
 import org.nd4j.linalg.dataset.DataSet
 
-abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
+abstract class Manager(workerRefs: List[ActorRef]) extends Actor {
 
   def beginLearn(dataSet: DataSet): Unit
 
@@ -40,7 +40,7 @@ abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
 
   def lesson(learned: Int, director: ActorRef): Receive = {
     case Learned =>
-      if (learned + 1 == studentRefs.size) {
+      if (learned + 1 == workerRefs.size) {
         log.debug("[Lesson] All workers completed teaching")
         director ! Teached
         context become holidays
@@ -53,7 +53,7 @@ abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
   def examination(predictions: List[List[Int]], director: ActorRef): Receive = {
     case Examined(prediction) =>
       val allPredictions = predictions ++ Seq(prediction)
-      if (allPredictions.size == studentRefs.size) {
+      if (allPredictions.size == workerRefs.size) {
         log.debug("[Examination] All workers completed exam")
         director ! ExamEnded(vote(allPredictions))
         context become holidays

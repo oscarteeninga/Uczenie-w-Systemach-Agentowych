@@ -5,13 +5,13 @@ import akka.event.Logging
 import command._
 import org.nd4j.linalg.dataset.DataSet
 
-case class StandardManager(studentRefs: List[ActorRef]) extends Manager(studentRefs) {
+case class StandardManager(workerRefs: List[ActorRef]) extends Manager(workerRefs) {
 
   def beginLearn(dataSet: DataSet): Unit = {
-    studentRefs.foreach(_ ! Learn(dataSet))
+    workerRefs.foreach(_ ! Learn(dataSet))
   }
 
   def beginExam(dataSet: DataSet): Unit = {
-    studentRefs.foreach(_ ! Exam(dataSet))
+    workerRefs.foreach(_ ! Exam(dataSet))
   }
 }

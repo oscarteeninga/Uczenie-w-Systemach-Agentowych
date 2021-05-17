@@ -5,7 +5,7 @@ import akka.event.Logging
 import command.{BeginExam, BeginYear, ExamEnded, Learn, Teach, Teached}
 import org.nd4j.linalg.dataset.DataSet
 
-case class Director(students: ActorRef) extends Actor {
+case class Director(manager: ActorRef) extends Actor {
 
   private val log = Logging(context.system, this)
 
@@ -15,7 +15,7 @@ case class Director(students: ActorRef) extends Actor {
     case BeginYear(lessons, exams) =>
       log.debug("[Holidays] Begin learning")
       val corrects = exams.map(getCorrectLabels)
-      students ! Teach(lessons.head)
+      manager ! Teach(lessons.head)
       context become learning(exams, lessons, corrects)
     case msg: Any => log.warning("[Manage] Received unknown message: " + msg.toString)
   }
@@ -24,10 +24,10 @@ case class Director(students: ActorRef) extends Actor {
     case Teached =>
       if (lessons.isEmpty) {
         log.debug("[Learning] Learning complete, begin exam")
-        students ! BeginExam(exams.head)
+        manager ! BeginExam(exams.head)
         context become examining(exams.tail, Nil, corrects)
       } else {
-        students ! Teach(lessons.head)
+        manager ! Teach(lessons.head)
         context become learning(exams, lessons.tail, corrects)
       }
     case msg: Any => log.warning("[Learning] Received unknown message: " + msg.toString)
@@ -41,7 +41,7 @@ case class Director(students: ActorRef) extends Actor {
         printResults(allAnswers, corrects)
         context become manage
       } else {
-        students ! BeginExam(exams.head)
+        manager ! BeginExam(exams.head)
         context become examining(exams.tail, allAnswers, corrects)
       }
     case msg: Any => log.warning("[Examining] Received unknown message: " + msg.toString)
