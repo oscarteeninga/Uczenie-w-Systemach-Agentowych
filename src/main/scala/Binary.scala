@@ -1,6 +1,6 @@
-import agents.student.BinaryWorker
+import agents.worker.BinaryWorker
 import agents.Director
-import agents.students.BinaryManager
+import agents.manager.BinaryManager
 import akka.actor.{ActorSystem, Props}
 import command.BeginYear
 import network.Data
@@ -8,15 +8,15 @@ import network.Data
 object Binary extends App {
   val system = ActorSystem("school")
 
-  val studentList = (1 to 5).toList.map(id => system.actorOf(Props(BinaryWorker(id, id % 10)), "Student" + id))
-  val students = system.actorOf(Props(BinaryManager(studentList)), "Students")
-  val director = system.actorOf(Props(Director(students)), "Director")
+  val workers = (1 to 10).toList.map(id => system.actorOf(Props(BinaryWorker(id, id % 10)), "Worker" + id))
+  val manager = system.actorOf(Props(BinaryManager(workers)), "Manager")
+  val director = system.actorOf(Props(Director(manager)), "Director")
 
-  val training = (1 to 10).toList.map(_ => Data.mnistTrain.next())
-  val test = (1 to 3).toList.map(_ => Data.mnistTest.next())
+  val training = (1 to 2).toList.flatMap(_ => Data.mnistTrainDatasets)
+  val test = Data.mnistTestDatasets.take(3)
 
   director ! BeginYear(training, test)
 
-  Thread.sleep(20000)
+  Thread.sleep(200000)
   system.terminate()
 }

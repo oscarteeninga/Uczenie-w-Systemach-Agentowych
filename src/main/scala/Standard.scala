@@ -1,6 +1,6 @@
-import agents.student.StandardWorker
+import agents.worker.StandardWorker
 import agents.Director
-import agents.students.StandardManager
+import agents.manager.StandardManager
 import akka.actor.{ActorSystem, Props}
 import command.BeginYear
 import network.Data
@@ -8,15 +8,15 @@ import network.Data
 object Standard extends App {
   val system = ActorSystem("school")
 
-  val studentList = (1 to 5).toList.map(id => system.actorOf(Props(StandardWorker(id)), "Student" + id))
-  val students = system.actorOf(Props(StandardManager(studentList)), "Students")
-  val director = system.actorOf(Props(Director(students)), "Director")
+  val workers = (1 to 1).toList.map(id => system.actorOf(Props(StandardWorker(id)), "Worker" + id))
+  val manager = system.actorOf(Props(StandardManager(workers)), "Manager")
+  val director = system.actorOf(Props(Director(manager)), "Director")
 
   val training = (1 to 10).toList.flatMap(_ => Data.mnistTrainDatasets)
   val test = Data.mnistTestDatasets.take(3)
 
   director ! BeginYear(training, test)
 
-  Thread.sleep(20000)
+  Thread.sleep(400000)
   system.terminate()
 }

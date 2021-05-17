@@ -1,4 +1,4 @@
-package agents.students
+package agents.manager
 
 import akka.actor.{Actor, ActorRef}
 import akka.event.Logging
@@ -13,16 +13,5 @@ case class StandardManager(studentRefs: List[ActorRef]) extends Manager(studentR
 
   def beginExam(dataSet: DataSet): Unit = {
     studentRefs.foreach(_ ! Exam(dataSet))
-  }
-
-  def vote(predictions: List[List[Int]]): List[Int] = {
-    predictions.head.indices.map { i =>
-      predictions.indices
-        .map(j => predictions(j)(i))
-        .groupBy(identity)
-        .mapValues(_.size)
-        .maxBy(_._2)
-        ._1
-    }.toList
   }
 }

@@ -1,4 +1,4 @@
-package agents.students
+package agents.manager
 
 import akka.actor.{Actor, ActorRef}
 import akka.event.Logging
@@ -11,7 +11,16 @@ abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
 
   def beginExam(dataSet: DataSet): Unit
 
-  def vote(predictions: List[List[Int]]): List[Int]
+  def vote(predictions: List[List[Int]]): List[Int] = {
+    predictions.head.indices.map { i =>
+      predictions.indices
+        .map(j => predictions(j)(i))
+        .groupBy(identity)
+        .mapValues(_.size)
+        .maxBy(_._2)
+        ._1
+    }.toList
+  }
 
   protected val log = Logging(context.system, this)
 
@@ -32,7 +41,7 @@ abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
   def lesson(learned: Int, director: ActorRef): Receive = {
     case Learned =>
       if (learned + 1 == studentRefs.size) {
-        log.debug("[Lesson] All students completed teaching")
+        log.debug("[Lesson] All workers completed teaching")
         director ! Teached
         context become holidays
       } else {
@@ -43,9 +52,9 @@ abstract class Manager(studentRefs: List[ActorRef]) extends Actor {
 
   def examination(predictions: List[List[Int]], director: ActorRef): Receive = {
     case Examined(prediction) =>
-      val allPredictions = prediction :: predictions
+      val allPredictions = predictions ++ Seq(prediction)
       if (allPredictions.size == studentRefs.size) {
-        log.debug("[Examination] All student completed exam")
+        log.debug("[Examination] All workers completed exam")
         director ! ExamEnded(vote(allPredictions))
         context become holidays
       } else {

@@ -17,7 +17,7 @@ case class Director(students: ActorRef) extends Actor {
       val corrects = exams.map(getCorrectLabels)
       students ! Teach(lessons.head)
       context become learning(exams, lessons, corrects)
-    case msg: Any => log.warning("[command.Manage] Received unknown message: " + msg.toString)
+    case msg: Any => log.warning("[Manage] Received unknown message: " + msg.toString)
   }
 
   def learning(exams: List[DataSet], lessons: List[DataSet], corrects: List[List[Int]]): Receive = {

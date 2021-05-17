@@ -1,16 +1,15 @@
-package agents.student
+package agents.worker
 
 import network.Data
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.nd4j.linalg.dataset.DataSet
-import util.DataSetManipulator
 
-case class BinaryWorker(id: Int, typ: Int) extends Worker {
+case class StandardWorker(id: Int) extends Worker {
 
-  override val network: MultiLayerNetwork = Data.binaryNetwork
+  override val network: MultiLayerNetwork = Data.network
 
   override def fit(sample: DataSet): Unit = {
-    network.fit(DataSetManipulator.binarize(sample, typ))
+    network.fit(sample)
   }
 
   override def predict(sample: DataSet): Array[Int] = {

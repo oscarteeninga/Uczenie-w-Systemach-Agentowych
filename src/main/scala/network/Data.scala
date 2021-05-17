@@ -12,8 +12,10 @@ import org.nd4j.linalg.lossfunctions.LossFunctions
 import scala.util.Random
 
 object Data {
+
   private val trainBatchSize = 6000
-  private val testBatchSize = 25
+  private val testBatchSize = 1000
+
   private def rngSeed: Int = Random.nextInt()
 
   def mnistTrain = new MnistDataSetIterator(trainBatchSize, true, rngSeed)
@@ -21,8 +23,6 @@ object Data {
 
   def mnistTrainDatasets: List[DataSet] = (1 to 60000/trainBatchSize).map(_ => mnistTrain.next()).toList
   def mnistTestDatasets: List[DataSet] = (1 to 10000/testBatchSize).map(_ => mnistTest.next()).toList
-
-  private val outputNum = 10
 
   private val numRows = 28
   private val numColumns = 28
@@ -42,8 +42,8 @@ object Data {
         .nOut(64)
         .activation(Activation.RELU)
         .build())
-      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.L1)
-        .nOut(outputNum)
+      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.L2)
+        .nOut(10)
         .activation(Activation.SOFTMAX)
         .build())
       .build()
@@ -65,9 +65,9 @@ object Data {
         .nOut(64)
         .activation(Activation.RELU)
         .build())
-      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
+      .layer(new OutputLayer.Builder(LossFunctions.LossFunction.L2)
         .nOut(2)
-        .activation(Activation.SOFTMAX)
+        .activation(Activation.RELU)
         .build())
       .build()
     new MultiLayerNetwork(conf)

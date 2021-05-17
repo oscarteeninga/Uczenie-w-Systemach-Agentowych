@@ -1,4 +1,4 @@
-package agents.student
+package agents.worker
 
 import akka.actor.Actor
 import akka.event.Logging
@@ -14,16 +14,16 @@ trait Worker extends Actor {
 
   def studying: Receive = {
     case Learn(sample) =>
-      log.debug("[Studying] Student " + id + " is learn")
+      log.debug("[Learning] Worker " + id + " is learn")
       fit(sample)
       sender ! Learned
       context become studying
     case Exam(sample) =>
-      log.debug("[Studying] Student " + id + " complete exam")
+      log.debug("[Examining] Worker " + id + " complete exam")
       val predictions = predict(sample)
       sender ! Examined(predictions.toList)
       context become studying
-    case msg: Any => log.warning("[InLearning] Received unknown message: " + msg.toString)
+    case msg: Any => log.warning("[Worker] Received unknown message: " + msg.toString)
   }
 
   def id: Int
