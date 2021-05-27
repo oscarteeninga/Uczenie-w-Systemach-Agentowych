@@ -7,7 +7,7 @@ import util.DataSetManipulator
 
 case class BinaryManager(workerRefs: List[ActorRef]) extends Manager(workerRefs) {
 
-  def workerRefToType: List[(Int, ActorRef)] = workerRefs.map(ref => (workerRefs.indexOf(ref) % workerRefs.size, ref))
+  def workerRefToType: List[(Int, ActorRef)] = workerRefs.map(ref => (workerRefs.indexOf(ref) % 10, ref))
 
   def beginLearn(dataSet: DataSet): Unit = {
     workerRefToType.foreach {
@@ -22,8 +22,16 @@ case class BinaryManager(workerRefs: List[ActorRef]) extends Manager(workerRefs)
   }
 
   override def vote(predictions: List[List[Int]]): List[Int] = {
-    // TODO: prediction(idx) jest listą wyników dla workera(idx), klasyfikującego idx % 10
-    //  oraz mającą jedynkę jeżeli próbka jest klasy idx % n lub zero jeżeli nie
-    ???
+    predictions.head.indices.toList.map { i =>
+      var results: Map[Int, Int] = (0 to 9).map(x => (x, 0)).toMap
+      predictions.indices.foreach { j =>
+        val typ = j % 10
+        if (predictions(j)(i) == 1) {
+          val votes = results(typ)
+          results = results.updated(typ, votes + 1)
+        }
+      }
+      results.toList.maxBy(_._2)._1
+    }
   }
 }
