@@ -14,7 +14,7 @@ import scala.util.Random
 object Data {
 
   private val trainBatchSize = 6000
-  private val testBatchSize = 1000
+  private val testBatchSize = 2000
 
   private def rngSeed: Int = Random.nextInt()
 
