@@ -16,6 +16,8 @@ object Data {
   private val trainBatchSize = 6000
   private val testBatchSize = 2000
 
+  def features_partitions_number = 1
+
   private def rngSeed: Int = Random.nextInt()
 
   def mnistTrain = new MnistDataSetIterator(trainBatchSize, true, rngSeed)
@@ -34,7 +36,7 @@ object Data {
       .l2(1e-4)
       .list()
       .layer(new DenseLayer.Builder()
-        .nIn(numRows * numColumns)
+        .nIn(numRows * numColumns / features_partitions_number)
         .nOut(128)
         .activation(Activation.RELU)
         .build())
@@ -57,7 +59,7 @@ object Data {
       .l2(1e-4)
       .list()
       .layer(new DenseLayer.Builder()
-        .nIn(numRows * numColumns)
+        .nIn(numRows * numColumns / features_partitions_number)
         .nOut(128)
         .activation(Activation.RELU)
         .build())
