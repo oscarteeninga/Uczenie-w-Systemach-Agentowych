@@ -7,6 +7,7 @@ sealed trait Command
 sealed trait Teaching extends Command
 case object Teached extends Teaching
 case class Teach(lesson: DataSet) extends Teaching
+case class TeachSpecial(lesson: List[DataSet]) extends Teaching
 case class Learn(lesson: DataSet) extends Teaching
 case object Learned extends Teaching
 
@@ -16,6 +17,7 @@ case class Examined(predictions: List[Int]) extends Examining
 
 sealed trait Manage extends Command
 case class BeginYear(lessons: List[DataSet], exams: List[DataSet]) extends Manage
+case class BeginSpecialYear(lessons: List[List[DataSet]], exams: List[DataSet]) extends Manage
 case object TeachingEnded extends Manage
 case class BeginExam(exam: DataSet) extends Manage
 case class ExamEnded(predictions: List[Int]) extends Manage
