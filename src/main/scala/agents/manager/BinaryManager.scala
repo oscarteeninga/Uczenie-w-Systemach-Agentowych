@@ -4,20 +4,26 @@ import akka.actor.ActorRef
 import command.{Exam, Learn}
 import org.nd4j.linalg.dataset.DataSet
 import util.DataSetManipulator
+import network.Data
 
 case class BinaryManager(workerRefs: List[ActorRef]) extends Manager(workerRefs) {
 
-  def workerRefToType: List[(Int, ActorRef)] = workerRefs.map(ref => (workerRefs.indexOf(ref) % 10, ref))
+  def workerRefToType: List[(Int, Int, ActorRef)] = workerRefs.map(ref =>
+    (workerRefs.indexOf(ref) % 10, workerRefs.indexOf(ref) % Data.features_partitions_number, ref))
 
   def beginLearn(dataSet: DataSet): Unit = {
     workerRefToType.foreach {
-      case (typ, ref) => ref ! Learn(DataSetManipulator.binarize(dataSet, typ))
+      case (typ, partition, ref) => ref ! Learn(DataSetManipulator.binarize(
+        DataSetManipulator.choose_features(dataSet, Data.features_partitions_number, partition),
+        typ))
     }
   }
 
   def beginExam(dataSet: DataSet): Unit = {
     workerRefToType.foreach {
-      case (typ, ref) => ref ! Exam(DataSetManipulator.binarize(dataSet, typ))
+      case (typ, partition, ref) => ref ! Exam(DataSetManipulator.binarize(
+        DataSetManipulator.choose_features(dataSet, Data.features_partitions_number, partition),
+        typ))
     }
   }
 

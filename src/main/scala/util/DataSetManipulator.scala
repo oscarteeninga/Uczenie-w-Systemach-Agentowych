@@ -10,4 +10,12 @@ object DataSetManipulator {
     val newLabels = new NDArray(labels)
     new DataSet(features, newLabels)
   }
+
+  def choose_features(dataSet: DataSet, partitionNumber: Int, partitionIndex: Int): DataSet = {
+    val partialFeatures = dataSet.getFeatures.toDoubleMatrix.map(features => {
+      val partitionLen = features.length / partitionNumber
+      features.slice(partitionIndex * partitionLen, (partitionIndex+1) * partitionLen)
+    })
+    new DataSet(new NDArray(partialFeatures), dataSet.getLabels)
+  }
 }
